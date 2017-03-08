@@ -1,2 +1,2 @@
 # RailQuery
-Offline database for querying over Indian Railway train scheiule
+Offline database for querying over Indian Railway train schedule
