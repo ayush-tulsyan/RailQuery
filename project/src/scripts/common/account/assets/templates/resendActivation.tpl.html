@@ -1,0 +1,16 @@
+<form name="form">
+  <div>
+    <h2>Resend Activation</h2>
+
+    <div class="form-group">
+      <label for='email'>Email</label>
+      <input id="email" class="form-control" type='email'
+        name='email' data-ng-model="user.email" required>
+      <span class="help-block" ng-show="form.$error.email[0].$invalid && form.$error.email[0].$dirty">Please enter a valid email.</span>
+    </div>
+
+    <button class="btn btn-primary" ng-disabled='form.$invalid' ng-click='resendActivation()' id='resend'>Send Activation Link</button>
+    or
+    <a class="show-signup" href="/register">cancel</a>
+  </div>
+</form>

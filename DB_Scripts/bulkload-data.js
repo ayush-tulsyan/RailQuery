@@ -3,9 +3,11 @@ const _ = require("lodash");
 const async = require("async");
 
 // Set the directory
-var dir = "./results/";
+var dir = process.argv[2];
+console.log("Reading from "+dir);
 // Set the size of bulk loading in one step
 var bulk_size = 50;
+console.log("The size of 1 bulk input is "+ bulk_size);
 
 async.waterfall([
     // Reading the directory for all files to load
