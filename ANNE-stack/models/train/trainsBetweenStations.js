@@ -2,7 +2,9 @@ var neo4j = require('neo4j-driver').v1;
 var async = require('async');
 var driver = require('../../connection');
 
-function getTrains(from, to, callback){
+var st_h
+
+function trainsBetweenStations(from, to, callback){
 
     var BFS_query = "" +
         "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
@@ -19,15 +21,14 @@ function getTrains(from, to, callback){
 
     async.waterfall([
         function(callback){
-            var data = [];
-            session
-                .run( neighbour_query, {station_from:from})
-                .then( function( result ) {
-                    for(var i=0;i<result.records.length;i++){
-                        data.push(result.records[i]._fields[0].properties);
-                    }
-                    callback(null, data);
-                });
+            getOutwardTrains(stationName, function(err, results){
+                if(err){
+                    callback(err, null);
+                }
+                else{
+                    callback(null, results);
+                }
+            });
         },
         function(data, callback){
 	    var train_list= []
@@ -64,4 +65,4 @@ function getTrains(from, to, callback){
     );
 }
 
-module.exports = { getTrains : getTrains }
+module.exports = { trainsBetweenStations : trainsBetweenStations }

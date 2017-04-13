@@ -2,6 +2,33 @@ var neo4j = require('neo4j-driver').v1;
 var async = require('async');
 var driver = require('../../connection');
 
+function getOutwardTrains(station_name, callback){
+    console.log("In getOutwardTrains");
+
+    var outgoingTrainQuery = "" + 
+        "match (n:station)-[p:travel]->(m:station) " + 
+        "where n.name = {station_from} " +
+        "return p";
+        
+    var session = driver.session();
+
+    var data = [];
+    session
+        .run( neighbour_query, {station_from:station_name})
+        .then( function( result ) {
+            for(var i=0;i<result.records.length;i++){
+                data.push(result.records[i]._fields[0].properties);
+                console.log(result.records[i]._fields);
+            }
+            console.log(data);
+            callback(null, data);
+            session.close();
+        })
+        .catch( function(error){
+            callback(error, null);
+        });
+}
+
 function getTrains(stationName, callback) {
     var BFS_query = "" + 
         "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
@@ -10,24 +37,22 @@ function getTrains(stationName, callback) {
         "RETURN p";
 
     var neighbour_query = "" + 
-        "MATCH (n:Station)-[p:Travel]->(m:Station) " + 
-        "WHERE n.name = {station_from} " +
-        "RETURN p";
+        "match (n:station)-[p:travel]->(m:station) " + 
+        "where n.name = {station_from} " +
+        "return p";
 
     var session = driver.session();
 
     async.waterfall([
         function(callback){
-            var data = [];
-            session
-                .run( neighbour_query, {station_from:stationName})
-                .then( function( result ) {
-                    for(var i=0;i<result.records.length;i++){
-                        data.push(result.records[i]._fields[0].properties);
-                    }
-                    console.log(data);
-                    callback(null, data);
-                });
+            getOutwardTrains(stationName, function(err, results){
+                if(err){
+                    callback(err, null);
+                }
+                else{
+                    callback(null, results);
+                }
+            });
         },
         function(data, callback){
             async.each(data, function(train, call){
@@ -58,4 +83,7 @@ function getTrains(stationName, callback) {
     );
 }
 
-module.exports = getTrains
+module.exports = { 
+    getOutwardTrains: getOutwardTrains,
+    getTrains : getTrains,
+};

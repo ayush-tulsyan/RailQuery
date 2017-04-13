@@ -17,7 +17,7 @@
         var LocalStrategy = require('passport-local').Strategy;
         var TwitterStrategy = require('passport-twitter').Strategy;
         var Neo4J = require('./connection');
-        var bfs = require('./models/train/getPaths');
+        var bfs = require('./models/train/trainsBetweenStations');
         console.log("BFS: ", bfs);
         var users = [
             { id: 1, username: 'guest', password: 'guestpass', email: 'guest@anne.com' },
@@ -118,48 +118,60 @@
         });
 
         app.get('/query1', function(req, res){
-            var source = req.query.source;
-            var destination = req.query.destination;
-            console.log("test1: ", source, destination);
-            var tmpObj = {}
-        	bfs.getTrains(source, destination, function(err, data){
-        		if(err){
-        			console.log(err);
-        		}
-        		else{
-        			console.log("data: ", data);
-                    var result = [];
-                    for(var i in data){
-                        tmp = data[i];
-                        var dataset = {'nodes' : [], 'edges' : []};
-                        if(data[i] != null && data[i] != undefined){
-                            for(var j in data[i]){
-                                console.log("J: ", j);
-                                if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-                                    if(j == 0){
-                                        console.log(data[i][j].from, data[i][j].to);
-                                        dataset.number = data[i][j].number;
-                                        dataset.nodes.push({'name' : data[i][j].from});
-                                        dataset.nodes.push({'name' : data[i][j].to});
-                                        dataset.edges.push({'source' : data[i][j].from, 'target' : data[i][j].to});
-                                    }
-                                    else{
-                                        dataset.nodes.push({'name' : data[i][j].to});
-                                        dataset.edges.push({'source' : data[i][j].from, 'target' : data[i][j].to});
+            app.get('/data1', function(req1, res1){
+                var source = req.query.source;
+                var destination = req.query.destination;
+                console.log("test1: ", source, destination);
+                var tmpObj = {}
+            	bfs.trainsBetweenStations(source, destination, function(err, data){
+            		if(err){
+            			console.log(err);
+            		}
+            		else{
+            			console.log("data: ", data);
+                        var result = [];
+                        for(var i in data){
+                            tmp = data[i];
+                            var dataset = {'nodes' : [], 'edges' : []};
+                            if(data[i] != null && data[i] != undefined){
+                                var count = 0;
+                                for(var j in data[i]){
+                                    console.log("J: ", j);
+                                    if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                                        if(j == 0){
+                                            console.log(data[i][j].from, data[i][j].to);
+                                            // dataset.number = data[i][j].number;
+                                            dataset.nodes.push({'name' : data[i][j].from});
+                                            dataset.nodes.push({'name' : data[i][j].to});
+                                            dataset.edges.push({'source' : count, 'target' : count+1});
+                                            count++;
+                                        }
+                                        else{
+                                            dataset.nodes.push({'name' : data[i][j].to});
+                                            dataset.edges.push({'source' : count, 'target' : count+1});
+                                            count++;        
+                                        }
                                     }
                                 }
                             }
+                            result.push(dataset);
                         }
-                        result.push(dataset);
-                    }
-                    console.log("RESULT", result);
-        			app.get('/data1', function(req1, res1){
-        				res1.json(result);
-        			});
-        		}
-        	});
+                        console.log("RESULT", result);
+            			// app.get('/data1', function(req1, res1){
+            				res1.send(JSON.stringify(result));
+
+            			// });
+            		}
+                });
+    	    });
+            res.sendfile("./public/options.html");
                 
         });
+
+        app.get('/data2', function(request, response){
+          response.sendfile("./public/view.html");
+        });
+
 
         // Send to js file for routing
         app.get('/json/neo4j.json', function(request, response){
