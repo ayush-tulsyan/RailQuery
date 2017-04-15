@@ -1,4 +1,6 @@
 node_modules/
 
 " Database files
-ANNE-STACK/DataBase/Data
+ANNE-stack/DataBase/Data/
+
+ANNE-stack/DataBase/tmp
