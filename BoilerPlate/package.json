@@ -1,7 +1,7 @@
 {
-  "name": "ANNEStack",
+  "name": "ANNE-stack",
   "version": "0.0.2",
-  "description": "Started project for creating application with AngularJS, Node JS, Neo4J and Express",
+  "description": "Started project for creating application with AngularJS, Node JS, Neo4J and Express, edited for RailQuery",
   "main": "app.js",
   "author": {
     "name": "42ID",
@@ -17,6 +17,8 @@
     "passport-twitter": "1.0.2",
     "express-jwt": "0.5.1",
     "jsonwebtoken": "1.2.0",
-    "selenium-webdriver": "~2.40.0"
+    "selenium-webdriver": "~2.40.0",
+    "lodash": "4.17.4",
+    "neo4j-driver": "1.0.5"
   }
 }

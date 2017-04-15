@@ -1,6 +1,6 @@
 node_modules/
 
 " Database files
-ANNE-stack/DataBase/Data/
+BoilerPlate/DataBase/Data/
 
-ANNE-stack/DataBase/tmp
+BoilerPlate/DataBase/tmp

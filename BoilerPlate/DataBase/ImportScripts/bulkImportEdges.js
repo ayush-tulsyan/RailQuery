@@ -45,7 +45,7 @@ var keys = Object.keys(data);
 var stepSize = 100;
 var count = 0;
 
-for(var j = 4; j<6; j++){
+for(var j = 6; j<7; j++){
     for(var i = 0; i<stepSize ;i++){
         var pos = stepSize*j+i;
         if (keys[pos]) {

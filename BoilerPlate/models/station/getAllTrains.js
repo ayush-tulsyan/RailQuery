@@ -28,6 +28,29 @@ function getOutwardTrains(station_code, callback){
         });
 }
 
+function getStationInfo(station_code, callback){
+    console.log("in getStationInfo");
+
+    var station_info_query = "" +
+        "MATCH (n:Station) " +
+        "WHERE n.code = {station_code} " +
+        "RETURN n";
+
+    var session = driver.session();
+
+    session
+        .run( neighbour_query, {station_from:station_name})
+        .then( function( result ) {
+            var data = result.records[i]._fields[0].properties;
+            console.log(data);
+            callback(null, data);
+            session.close();
+        })
+        .catch( function(error){
+            callback(error, null);
+        });
+}
+
 function getReachableStations(station_code, callback) {
     var BFS_query = "" + 
         "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
