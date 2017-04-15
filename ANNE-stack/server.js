@@ -116,7 +116,29 @@
 
         // We only need a default route.  Angular will handle the rest.
         app.get('/', function(request, response){
-          response.sendfile("./public/index.html");
+          response.sendfile("./public/home.html");
+        });
+
+        app.get('/page1', function(request, response){
+          response.sendfile("./public/page1.html");
+        });
+
+        app.get('/page2', function(request, response){
+          response.sendfile("./public/page2.html");
+        });
+
+        app.get('/page3', function(request, response){
+          response.sendfile("./public/page3.html");
+        });
+
+        app.get('/page4', function(request, response){
+          response.sendfile("./public/page4.html");
+        });
+
+        app.get('/background', function (req, res) {
+            var path = require('path'),
+            fs = require('fs');
+            res.sendfile(path.resolve('./public/images/dark_embroidery.png'));
         });
 
         app.get('/query1', function(req, res){
@@ -124,45 +146,51 @@
                 var source = req.query.source;
                 var destination = req.query.destination;
                 console.log("test1: ", source, destination);
-                var tmpObj = {}
-            	bfs.trainsBetweenStations(source, destination, function(err, data){
-            		if(err){
-            			console.log(err);
-            		}
-            		else{
-            			console.log("data: ", data);
-                        var result = [];
-                        for(var i in data){
-                            tmp = data[i];
-                            var dataset = {'nodes' : [], 'edges' : []};
-                            if(data[i] != null && data[i] != undefined){
-                                var count = 0;
-                                for(var j in data[i]){
-                                    console.log("J: ", j);
-                                    if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-                                        if(j == 0){
-                                            console.log(data[i][j].from, data[i][j].to);
-                                            dataset.number = data[i][j].number;
-                                            dataset.nodes.push({'name' : data[i][j].from});
-                                            dataset.nodes.push({'name' : data[i][j].to});
-                                            dataset.edges.push({'source' : count, 'target' : count+1});
-                                            count++;
-                                        }
-                                        else{
-                                            dataset.nodes.push({'name' : data[i][j].to});
-                                            dataset.edges.push({'source' : count, 'target' : count+1});
-                                            count++;        
-                                        }
-                                    }
-                                }
-                            }
-                            result.push(dataset);
-                        }
-                        console.log("RESULT", result);
-                        res.send(JSON.stringify(result));
+                var tmpObj = {};
+                var result = {'nodes' : [], 'edges' : []};
+                result.nodes.push({'name' : 'test1'});
+                result.nodes.push({'name' : 'test2'});
+                result.edges.push({'source' : 0, 'target' : 1});
+                result.number = 69;
+                res.send(JSON.stringify([result]));
+            	// bfs.trainsBetweenStations(source, destination, function(err, data){
+            	// 	if(err){
+            	// 		console.log(err);
+            	// 	}
+            	// 	else{
+            	// 		console.log("data: ", data);
+             //            var result = [];
+             //            for(var i in data){
+             //                tmp = data[i];
+             //                var dataset = {'nodes' : [], 'edges' : []};
+             //                if(data[i] != null && data[i] != undefined){
+             //                    var count = 0;
+             //                    for(var j in data[i]){
+             //                        console.log("J: ", j);
+             //                        if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+             //                            if(j == 0){
+             //                                console.log(data[i][j].from, data[i][j].to);
+             //                                dataset.number = data[i][j].number;
+             //                                dataset.nodes.push({'name' : data[i][j].from});
+             //                                dataset.nodes.push({'name' : data[i][j].to});
+             //                                dataset.edges.push({'source' : count, 'target' : count+1});
+             //                                count++;
+             //                            }
+             //                            else{
+             //                                dataset.nodes.push({'name' : data[i][j].to});
+             //                                dataset.edges.push({'source' : count, 'target' : count+1});
+             //                                count++;        
+             //                            }
+             //                        }
+             //                    }
+             //                }
+             //                result.push(dataset);
+             //            }
+             //            console.log("RESULT", result);
+             //            res.send(JSON.stringify(result));
             	
-            		}
-                });
+            	// 	}
+             //    });
             
                 
         });
@@ -170,7 +198,13 @@
         app.get('/query2', function(req, res){
                 var source = req.query.source;
                 console.log("test1: ", source);
-                var tmpObj = {}
+                var tmpObj = {};
+                // var result = {'nodes' : [], 'edges' : []};
+                // result.nodes.push({'name' : 'test1'});
+                // result.nodes.push({'name' : 'test2'});
+                // result.edges.push({'source' : 0, 'target' : 1});
+                // result.number = 69;
+                // res.send(JSON.stringify([result]));
                 reachability.getReachableStations(source, function(err, data){
                     if(err){
                         console.log(err);
@@ -222,47 +256,53 @@
         app.get('/query3', function(req, res){
             var tnumber = req.query.tnumber;
             console.log("test1: ", tnumber);
-            var tmpObj = {}
-            bfs.getTrainRoute(tnumber, function(err, data){
-                if(err){
-                    console.log("ERR: ", err);
-                }
-                else{
-                    console.log("data: ", data);
-                    var result = [];
-                    for(var i in data){
-                        tmp = data[i];
-                        var dataset = {'nodes' : [], 'edges' : []};
-                        if(data[i] != null && data[i] != undefined){
-                            var count = 0;
-                            for(var j in data[i]){
-                                console.log("J: ", j);
-                                if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-                                    if(j == 0){
-                                        console.log(data[i][j].from, data[i][j].to);
-                                        dataset.number = data[i][j].number;
-                                        dataset.nodes.push({'name' : data[i][j].from});
-                                        dataset.nodes.push({'name' : data[i][j].to});
-                                        dataset.edges.push({'source' : count, 'target' : count+1});
-                                        count++;
-                                    }
-                                    else{
-                                        dataset.nodes.push({'name' : data[i][j].to});
-                                        dataset.edges.push({'source' : count, 'target' : count+1});
-                                        count++;        
-                                    }
-                                }
-                            }
-                        }
-                        result.push(dataset);
-                    }
-                    console.log("RESULT", result);
-                    // app.get('/data5', function(req1, res1){
-                    //     res1.send(JSON.stringify(result));
-                    // });        
-                    res.send(JSON.stringify(result));
-                }
-            });              
+            var tmpObj = {};
+            var result = {'nodes' : [], 'edges' : []};
+            result.nodes.push({'name' : 'test1'});
+            result.nodes.push({'name' : 'test2'});
+            result.edges.push({'source' : 0, 'target' : 1});
+            result.number = 69;
+            res.send(JSON.stringify([result]));
+            // bfs.getTrainRoute(tnumber, function(err, data){
+            //     if(err){
+            //         console.log("ERR: ", err);
+            //     }
+            //     else{
+            //         console.log("data: ", data);
+            //         var result = [];
+            //         for(var i in data){
+            //             tmp = data[i];
+            //             var dataset = {'nodes' : [], 'edges' : []};
+            //             if(data[i] != null && data[i] != undefined){
+            //                 var count = 0;
+            //                 for(var j in data[i]){
+            //                     console.log("J: ", j);
+            //                     if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+            //                         if(j == 0){
+            //                             console.log(data[i][j].from, data[i][j].to);
+            //                             dataset.number = data[i][j].number;
+            //                             dataset.nodes.push({'name' : data[i][j].from});
+            //                             dataset.nodes.push({'name' : data[i][j].to});
+            //                             dataset.edges.push({'source' : count, 'target' : count+1});
+            //                             count++;
+            //                         }
+            //                         else{
+            //                             dataset.nodes.push({'name' : data[i][j].to});
+            //                             dataset.edges.push({'source' : count, 'target' : count+1});
+            //                             count++;        
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //             result.push(dataset);
+            //         }
+            //         console.log("RESULT", result);
+            //         // app.get('/data5', function(req1, res1){
+            //         //     res1.send(JSON.stringify(result));
+            //         // });        
+            //         res.send(JSON.stringify(result));
+            //     }
+            // });              
         });
 
         app.get('/link3', function(request, response){
@@ -282,47 +322,53 @@
                 var destination = req.query.destination;
                 var date = req.query.date;
                 console.log("test1: ", source, destination, date);
-                var tmpObj = {}
-                bfs.getTrainRoute(source, destination, new Date(date).getDay(), function(err, data){   //function corresponding to date
-                    if(err){
-                        console.log("ERR: ", err);
-                    }
-                    else{
-                        console.log("data: ", data);
-                        var result = [];
-                        for(var i in data){
-                            tmp = data[i];
-                            var dataset = {'nodes' : [], 'edges' : []};
-                            if(data[i] != null && data[i] != undefined){
-                                var count = 0;
-                                for(var j in data[i]){
-                                    console.log("J: ", j);
-                                    if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-                                        if(j == 0){
-                                            console.log(data[i][j].from, data[i][j].to);
-                                            dataset.number = data[i][j].number;
-                                            dataset.nodes.push({'name' : data[i][j].from});
-                                            dataset.nodes.push({'name' : data[i][j].to});
-                                            dataset.edges.push({'source' : count, 'target' : count+1});
-                                            count++;
-                                        }
-                                        else{
-                                            dataset.nodes.push({'name' : data[i][j].to});
-                                            dataset.edges.push({'source' : count, 'target' : count+1});
-                                            count++;        
-                                        }
-                                    }
-                                }
-                            }
-                            result.push(dataset);
-                        }
-                        console.log("RESULT", result);
-                        // app.get('/data1', function(req1, res1){
-                            res1.send(JSON.stringify(result));
+                var tmpObj = {};
+                var result = {'nodes' : [], 'edges' : []};
+                result.nodes.push({'name' : 'test1'});
+                result.nodes.push({'name' : 'test2'});
+                result.edges.push({'source' : 0, 'target' : 1});
+                result.number = 69;
+                res.send(JSON.stringify([result]));
+                // bfs.getTrainRoute(source, destination, new Date(date).getDay(), function(err, data){   //function corresponding to date
+                //     if(err){
+                //         console.log("ERR: ", err);
+                //     }
+                //     else{
+                //         console.log("data: ", data);
+                //         var result = [];
+                //         for(var i in data){
+                //             tmp = data[i];
+                //             var dataset = {'nodes' : [], 'edges' : []};
+                //             if(data[i] != null && data[i] != undefined){
+                //                 var count = 0;
+                //                 for(var j in data[i]){
+                //                     console.log("J: ", j);
+                //                     if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                //                         if(j == 0){
+                //                             console.log(data[i][j].from, data[i][j].to);
+                //                             dataset.number = data[i][j].number;
+                //                             dataset.nodes.push({'name' : data[i][j].from});
+                //                             dataset.nodes.push({'name' : data[i][j].to});
+                //                             dataset.edges.push({'source' : count, 'target' : count+1});
+                //                             count++;
+                //                         }
+                //                         else{
+                //                             dataset.nodes.push({'name' : data[i][j].to});
+                //                             dataset.edges.push({'source' : count, 'target' : count+1});
+                //                             count++;        
+                //                         }
+                //                     }
+                //                 }
+                //             }
+                //             result.push(dataset);
+                //         }
+                //         console.log("RESULT", result);
+                //         // app.get('/data1', function(req1, res1){
+                //             res1.send(JSON.stringify(result));
 
-                        // });
-                    }
-                });
+                //         // });
+                //     }
+                // });
             });
             res.sendfile("./public/options4.html");
                 
