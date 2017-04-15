@@ -6,9 +6,9 @@ var st = require('../station/getAllTrains');
 
 function getTrainInfo(train_no, callback){
     console.log("Get Train Info");
-    var src_dest_query = "" + 
-        "MATCH (n:Train) " + 
-        "WHERE n.number = {train} " + 
+    var src_dest_query = "" +
+        "MATCH (n:Train) " +
+        "WHERE n.number = {train} " +
         "RETURN n";
 
     session = driver.session();
@@ -32,11 +32,11 @@ function getTrainInfo(train_no, callback){
 
 function getTrainRoute(train_no, callback){
     console.log("The Train no is" + train_no);
-//    train_no = parseInt(train_no);
+    //    train_no = parseInt(train_no);
     var route_query = "" +
-        "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
-        "WHERE n.code = {station_from} " + 
-        "AND all(r in p where r.number = {number}) " + 
+        "MATCH (n:Station)-[p:Travel*..]->(m:Station) " +
+        "WHERE n.code = {station_from} " +
+        "AND all(r in p where r.number = {number}) " +
         "RETURN p";
 
     session = driver.session();
@@ -53,24 +53,62 @@ function getTrainRoute(train_no, callback){
                 });
             },
             function(data, callback){
-                var train_list = []; 
+                console.log("IN CALLBACK OF GETTRAINROUTE");
+                var train_list = [];
                 session
-                    .run( route_query, {number:train_no, station_from:data.src})
+                    .run( route_query, {number:train_no, station_from:data.source})
                     .then( function(results){
                         console.log(results);
                         for(var i=0;i<results.records.length;i++){
-                            var station_list = []; 
+                            var station_list = [];
                             for(var j=0; j<results.records[i]._fields[0].length; j++){
                                 station_list.push(results.records[i]._fields[0][j].properties);
                                 console.log(results.records[i]._fields[0][j].properties);
                             }
                             train_list.push(station_list);
                         }
-                        callback(null, [train_list.slice(-1)[0]]);
+                        callback(null, train_list.slice(-1)[0]);
                     })
-                    .catch( function(err){
-                        callback(err, null);
-                    });
+                .catch( function(err){
+                    callback(err, null);
+                });
+            },
+            function(data, callback){
+                console.log("IN THE CALLBACK");
+                var station_list = [];
+                for(var i=0;i<data.length;i++) station_list.push(0);
+
+                async.eachOf(data,
+                        function(edge, index, call){
+                            console.log("WITH INDEX "+index+"with edge "+JSON.stringify(edge));
+                            st.getStationInfo(edge.src, function(err, res){
+                                if(err){
+                                    call(err, err);
+                                }
+                                else{
+                                    console.log("GOT DATA");
+                                    station_list[index] = res;
+                                    call(null, null);
+                                }
+                            });
+                        },
+                        function(err){
+                            if(err){
+                                callback(err, null);
+                            }
+                            else{
+                                st.getStationInfo(data[data.length-1].dest, function(e, r){
+                                    if(e){
+                                        callback(e, null);
+                                    }
+                                    else{
+                                        station_list[data.length-1] = r;
+                                        callback(null, [station_list]);
+                                    }
+                                });
+                            }
+                        }
+                );
             }],
             function(err, results){
                 console.log("We're Done!");
@@ -86,8 +124,8 @@ function getTrainRoute(train_no, callback){
 function trainsBetweenStations(from, to, callback){
 
     var BFS_query = "" +
-        "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
-        "WHERE n.code = {station_from} AND m.code ={station_to} " + 
+        "MATCH (n:Station)-[p:Travel*..]->(m:Station) " +
+        "WHERE n.code = {station_from} AND m.code ={station_to} " +
         "AND all(r in p where r.number = {number}) " +
         "RETURN p";
 
@@ -110,8 +148,8 @@ function trainsBetweenStations(from, to, callback){
                 });
             },
             function(data, callback){
-                var train_list= []
-                    async.each(data, 
+                var train_list= [];
+                    async.each(data,
                             function(train, call){
                                 train.station_from = from;
                                 train.station_to = to;
@@ -119,7 +157,7 @@ function trainsBetweenStations(from, to, callback){
                                     .run( BFS_query, train)
                                     .then( function( result ) {
                                         for(var i=0;i<result.records.length;i++){
-                                            var station_list = []; 
+                                            var station_list = [];
                                             for(var j=0; j<result.records[i]._fields[0].length; j++){
                                                 station_list.push(result.records[i]._fields[0][j].properties);
                                                 console.log(result.records[i]._fields[0][j].properties);
@@ -132,7 +170,7 @@ function trainsBetweenStations(from, to, callback){
                                 .catch( function(err){
                                     call(err,null);
                                 });
-                            }, 
+                            },
                             function(err){
                                 if(err){
                                     callback(err, null);
@@ -142,6 +180,57 @@ function trainsBetweenStations(from, to, callback){
                                 }
                             }
                 );
+            },
+            function(data, callback){
+                console.log("IN CALLBACK2");
+                train_list = [];
+                async.each(data,
+                        function(dat, callback2){
+                            console.log("IN THE CALLBACK");
+                            var station_list = [];
+                            for(var i=0;i<dat.length;i++) station_list.push(0);
+
+                            async.eachOf(dat,
+                                    function(edge, index, call){
+                                        console.log("WITH INDEX "+index+"with edge "+JSON.stringify(edge));
+                                        st.getStationInfo(edge.src, function(err, res){
+                                            if(err){
+                                                call(err, err);
+                                            }
+                                            else{
+                                                console.log("GOT DATA");
+                                                station_list[index] = res;
+                                                call(null, null);
+                                            }
+                                        });
+                                    },
+                                    function(err){
+                                        if(err){
+                                            callback2(err, null);
+                                        }
+                                        else{
+                                            st.getStationInfo(dat[dat.length-1].dest, function(e, r){
+                                                if(e){
+                                                    callback2(e, null);
+                                                }
+                                                else{
+                                                    station_list[dat.length-1] = r;
+                                                    train_list.push(station_list);
+                                                    callback2(null, null);
+                                                }
+                                            });
+                                        }
+                                    }
+                            );
+                        },
+                        function(err){
+                            if(err){
+                                callback(err);
+                            }
+                            else{
+                                callback(null,train_list);
+                            }
+                        });
             }],
             function(err, results){
                 console.log("We're Done!");
@@ -152,8 +241,8 @@ function trainsBetweenStations(from, to, callback){
     );
 }
 
-module.exports = { 
+module.exports = {
     trainsBetweenStations : trainsBetweenStations,
     getTrainRoute : getTrainRoute,
     getTrainInfo : getTrainInfo
-}
+};

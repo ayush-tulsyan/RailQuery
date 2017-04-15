@@ -131,10 +131,6 @@
           response.sendfile("./public/page3.html");
         });
 
-        app.get('/page4', function(request, response){
-          response.sendfile("./public/page4.html");
-        });
-
         app.get('/background', function (req, res) {
             var path = require('path'),
             fs = require('fs');
@@ -147,50 +143,50 @@
                 var destination = req.query.destination;
                 console.log("test1: ", source, destination);
                 var tmpObj = {};
-                var result = {'nodes' : [], 'edges' : []};
-                result.nodes.push({'name' : 'test1'});
-                result.nodes.push({'name' : 'test2'});
-                result.edges.push({'source' : 0, 'target' : 1});
-                result.number = 69;
-                res.send(JSON.stringify([result]));
-            	// bfs.trainsBetweenStations(source, destination, function(err, data){
-            	// 	if(err){
-            	// 		console.log(err);
-            	// 	}
-            	// 	else{
-            	// 		console.log("data: ", data);
-             //            var result = [];
-             //            for(var i in data){
-             //                tmp = data[i];
-             //                var dataset = {'nodes' : [], 'edges' : []};
-             //                if(data[i] != null && data[i] != undefined){
-             //                    var count = 0;
-             //                    for(var j in data[i]){
-             //                        console.log("J: ", j);
-             //                        if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-             //                            if(j == 0){
-             //                                console.log(data[i][j].from, data[i][j].to);
-             //                                dataset.number = data[i][j].number;
-             //                                dataset.nodes.push({'name' : data[i][j].from});
-             //                                dataset.nodes.push({'name' : data[i][j].to});
-             //                                dataset.edges.push({'source' : count, 'target' : count+1});
-             //                                count++;
-             //                            }
-             //                            else{
-             //                                dataset.nodes.push({'name' : data[i][j].to});
-             //                                dataset.edges.push({'source' : count, 'target' : count+1});
-             //                                count++;        
-             //                            }
-             //                        }
-             //                    }
-             //                }
-             //                result.push(dataset);
-             //            }
-             //            console.log("RESULT", result);
-             //            res.send(JSON.stringify(result));
+                // var result = {'nodes' : [], 'edges' : []};
+                // result.nodes.push({'name' : 'test1'});
+                // result.nodes.push({'name' : 'test2'});
+                // result.edges.push({'source' : 0, 'target' : 1});
+                // result.number = 69;
+                // res.send(JSON.stringify([result]));
+            	bfs.trainsBetweenStations(source, destination, function(err, data){
+            		if(err){
+            			console.log(err);
+            		}
+            		else{
+            			console.log("data: ", data);
+                        // var result = [];
+                        // for(var i in data){
+                        //     tmp = data[i];
+                        //     var dataset = {'nodes' : [], 'edges' : []};
+                        //     if(data[i] != null && data[i] != undefined){
+                        //         var count = 0;
+                        //         for(var j in data[i]){
+                        //             console.log("J: ", j);
+                        //             if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                        //                 if(j == 0){
+                        //                     console.log(data[i][j].from, data[i][j].to);
+                        //                     dataset.number = data[i][j].number;
+                        //                     dataset.nodes.push({'name' : data[i][j].from});
+                        //                     dataset.nodes.push({'name' : data[i][j].to});
+                        //                     dataset.edges.push({'source' : count, 'target' : count+1});
+                        //                     count++;
+                        //                 }
+                        //                 else{
+                        //                     dataset.nodes.push({'name' : data[i][j].to});
+                        //                     dataset.edges.push({'source' : count, 'target' : count+1});
+                        //                     count++;        
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        //     result.push(dataset);
+                        // }
+                        console.log("RESULT", data);
+                        res.send(JSON.stringify(data));
             	
-            	// 	}
-             //    });
+            		}
+                });
             
                 
         });
@@ -211,35 +207,35 @@
                     }
                     else{
                         console.log("data: ", data);
-                        var result = [];
-                        for(var i in data){
-                            tmp = data[i];
-                            var dataset = {'nodes' : [], 'edges' : []};
-                            if(data[i] != null && data[i] != undefined){
-                                var count = 0;
-                                for(var j in data[i]){
-                                    console.log("J: ", j);
-                                    if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-                                        if(j == 0){
-                                            console.log(data[i][j].from, data[i][j].to);
-                                            dataset.number = data[i][j].number;
-                                            dataset.nodes.push({'name' : data[i][j].from});
-                                            dataset.nodes.push({'name' : data[i][j].to});
-                                            dataset.edges.push({'source' : count, 'target' : count+1});
-                                            count++;
-                                        }
-                                        else{
-                                            dataset.nodes.push({'name' : data[i][j].to});
-                                            dataset.edges.push({'source' : count, 'target' : count+1});
-                                            count++;        
-                                        }
-                                    }
-                                }
-                            }
-                            result.push(dataset);
-                        }
-                        console.log("RESULT", result);
-                        res.send(JSON.stringify(result));
+                        // var result = [];
+                        // for(var i in data){
+                        //     tmp = data[i];
+                        //     var dataset = {'nodes' : [], 'edges' : []};
+                        //     if(data[i] != null && data[i] != undefined){
+                        //         var count = 0;
+                        //         for(var j in data[i]){
+                        //             console.log("J: ", j);
+                        //             if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                        //                 if(j == 0){
+                        //                     console.log(data[i][j].from, data[i][j].to);
+                        //                     dataset.number = data[i][j].number;
+                        //                     dataset.nodes.push({'name' : data[i][j].from});
+                        //                     dataset.nodes.push({'name' : data[i][j].to});
+                        //                     dataset.edges.push({'source' : count, 'target' : count+1});
+                        //                     count++;
+                        //                 }
+                        //                 else{
+                        //                     dataset.nodes.push({'name' : data[i][j].to});
+                        //                     dataset.edges.push({'source' : count, 'target' : count+1});
+                        //                     count++;        
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
+                        //     result.push(dataset);
+                        // }
+                        console.log("RESULT", data);
+                        res.send(JSON.stringify(data));
                     }
                 });
             
@@ -257,52 +253,52 @@
             var tnumber = req.query.tnumber;
             console.log("test1: ", tnumber);
             var tmpObj = {};
-            var result = {'nodes' : [], 'edges' : []};
-            result.nodes.push({'name' : 'test1'});
-            result.nodes.push({'name' : 'test2'});
-            result.edges.push({'source' : 0, 'target' : 1});
-            result.number = 69;
-            res.send(JSON.stringify([result]));
-            // bfs.getTrainRoute(tnumber, function(err, data){
-            //     if(err){
-            //         console.log("ERR: ", err);
-            //     }
-            //     else{
-            //         console.log("data: ", data);
-            //         var result = [];
-            //         for(var i in data){
-            //             tmp = data[i];
-            //             var dataset = {'nodes' : [], 'edges' : []};
-            //             if(data[i] != null && data[i] != undefined){
-            //                 var count = 0;
-            //                 for(var j in data[i]){
-            //                     console.log("J: ", j);
-            //                     if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
-            //                         if(j == 0){
-            //                             console.log(data[i][j].from, data[i][j].to);
-            //                             dataset.number = data[i][j].number;
-            //                             dataset.nodes.push({'name' : data[i][j].from});
-            //                             dataset.nodes.push({'name' : data[i][j].to});
-            //                             dataset.edges.push({'source' : count, 'target' : count+1});
-            //                             count++;
-            //                         }
-            //                         else{
-            //                             dataset.nodes.push({'name' : data[i][j].to});
-            //                             dataset.edges.push({'source' : count, 'target' : count+1});
-            //                             count++;        
-            //                         }
-            //                     }
-            //                 }
-            //             }
-            //             result.push(dataset);
-            //         }
-            //         console.log("RESULT", result);
-            //         // app.get('/data5', function(req1, res1){
-            //         //     res1.send(JSON.stringify(result));
-            //         // });        
-            //         res.send(JSON.stringify(result));
-            //     }
-            // });              
+            // var result = {'nodes' : [], 'edges' : []};
+            // result.nodes.push({'name' : 'test1'});
+            // result.nodes.push({'name' : 'test2'});
+            // result.edges.push({'source' : 0, 'target' : 1});
+            // result.number = 69;
+            // res.send(JSON.stringify([result]));
+            bfs.getTrainRoute(tnumber, function(err, data){
+                if(err){
+                    console.log("ERR: ", err);
+                }
+                else{
+                    console.log("data: ", data);
+                    // var result = [];
+                    // for(var i in data){
+                    //     tmp = data[i];
+                    //     var dataset = {'nodes' : [], 'edges' : []};
+                    //     if(data[i] != null && data[i] != undefined){
+                    //         var count = 0;
+                    //         for(var j in data[i]){
+                    //             console.log("J: ", j);
+                    //             if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                    //                 if(j == 0){
+                    //                     console.log(data[i][j].from, data[i][j].to);
+                    //                     dataset.number = data[i][j].number;
+                    //                     dataset.nodes.push({'name' : data[i][j].from});
+                    //                     dataset.nodes.push({'name' : data[i][j].to});
+                    //                     dataset.edges.push({'source' : count, 'target' : count+1});
+                    //                     count++;
+                    //                 }
+                    //                 else{
+                    //                     dataset.nodes.push({'name' : data[i][j].to});
+                    //                     dataset.edges.push({'source' : count, 'target' : count+1});
+                    //                     count++;        
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    //     result.push(dataset);
+                    // }
+                    console.log("RESULT", data);
+                    // app.get('/data5', function(req1, res1){
+                    //     res1.send(JSON.stringify(result));
+                    // });        
+                    res.send(JSON.stringify(data));
+                }
+            });              
         });
 
         app.get('/link3', function(request, response){

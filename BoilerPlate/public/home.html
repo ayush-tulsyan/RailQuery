@@ -17,10 +17,31 @@
     <li style="color:white;"><a href="/page1"><b>Trains b/w Stations</b></a></li>
     <li style="color:white;"><a href="/page2"><b>Reachability</b></a></li>
     <li style="color:white;"><a href="/page3"><b>Train Number</b></a></li>
-    <li style="color:white;"><a href="/page4"><b>Datewise Trains</b><a></li>  
+    <!-- <li style="color:white;"><a href="/page4"><b>Datewise Trains</b><a></li>   -->
   </ul>
   <br>
-  <p style="color:white;"><strong>Note:</strong> Write something about RailQuery.</p>
+  <h4 style="color:white;"><b>Scope of Database</b></h4>
+  <p style="color:white;">Database simplifies the task of storing all necessary details related to a railway inquiry system: train no., train type, etc. Details like route of the train, city, time of travel, cost, facilities, etc. are also included.</p>
+
+  <br><br>
+
+  <h4 style="color:white;"><b>Motivation and Related Work</b></h4>
+  <p style="color:white;">Railways is widely gaining importance not only due to the vast amount of services it provides but also its humongous expansion rate. Thus, an application which enables users to query important details related to a railways is a must in present scenario. But then, one may raise the question that these type of applications already exist, so why a new one? Considering the fact that this is a course project, its main aim is to get students familiar with the various DBMS systems and their technicalities. DBMS which we used is a Graph Database which is one of the famous database used now-a-days to store graph based data. Doing this project definitely taught us the basics of Graph Databases and their queries.</p>
+
+  <br><br>
+
+  <h4 style="color:white;"><b>Description</b></h4>
+  <p style="color:white;">In our project, we have tried to offer some of the functionalities offered by websites like erail.in, indiarailinfo.com. We keep a database of all the available trains and use this data answer the queries of our users.</p>
+<p style="color:white;">The main algorithms which we are using are Dijkstra's Algorithm and BFS-Traversal. Using the built-in implementation of these algorithms in our database(neo4j), we compute all queries.</p>
+<p style="color:white;">Our system offers a simple UI for the users. Based on the user input of source and target station, our system generates a set of available trains that would take one from the source to the destination. Our system also generates a map of India, and shows different trains and their routes.</p>
+<p style="color:white;">Along with building this application, we have also looked upon the implementation of Neo4j, about how data is stored in it internally, how queries are optimized, etc. We have also looked into the technicalities of D3.js and how it converts a json file to a visual form.</p>
+
+<br><br>
+
+<h4 style="color:white;"><b>Source of Data</b></h4>
+  <p style="color:white;">Data was collected using railway API. Data in different formats was available like information regarding route of a train, canceled trains, rescheduled trains, etc. and all of this information was used in testing the scalability of our application.</p>
+
+
 </div>
 
 </body>
