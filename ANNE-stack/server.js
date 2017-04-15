@@ -18,6 +18,8 @@
         var TwitterStrategy = require('passport-twitter').Strategy;
         var Neo4J = require('./connection');
         var bfs = require('./models/train/trainsBetweenStations');
+        var reachability = require('./models/station/getAllTrains');
+        var async = require('async');
         console.log("BFS: ", bfs);
         var users = [
             { id: 1, username: 'guest', password: 'guestpass', email: 'guest@anne.com' },
@@ -93,7 +95,7 @@
         app.use(express.session({ cookie: { maxAge: 60000 }, secret: 'anne#'}));
         // use flash messages
         app.use(flash());
-
+        app.use('/static', express.static('public'))
 
         app.use(passport.initialize());
         app.use(passport.session());
@@ -118,7 +120,7 @@
         });
 
         app.get('/query1', function(req, res){
-            app.get('/data1', function(req1, res1){
+
                 var source = req.query.source;
                 var destination = req.query.destination;
                 console.log("test1: ", source, destination);
@@ -140,7 +142,7 @@
                                     if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
                                         if(j == 0){
                                             console.log(data[i][j].from, data[i][j].to);
-                                            // dataset.number = data[i][j].number;
+                                            dataset.number = data[i][j].number;
                                             dataset.nodes.push({'name' : data[i][j].from});
                                             dataset.nodes.push({'name' : data[i][j].to});
                                             dataset.edges.push({'source' : count, 'target' : count+1});
@@ -157,19 +159,182 @@
                             result.push(dataset);
                         }
                         console.log("RESULT", result);
-            			// app.get('/data1', function(req1, res1){
-            				res1.send(JSON.stringify(result));
-
-            			// });
+                        res.send(JSON.stringify(result));
+            	
             		}
                 });
-    	    });
-            res.sendfile("./public/options.html");
+            
+                
+        });
+
+        app.get('/query2', function(req, res){
+                var source = req.query.source;
+                console.log("test1: ", source);
+                var tmpObj = {}
+                reachability.getReachableStations(source, function(err, data){
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        console.log("data: ", data);
+                        var result = [];
+                        for(var i in data){
+                            tmp = data[i];
+                            var dataset = {'nodes' : [], 'edges' : []};
+                            if(data[i] != null && data[i] != undefined){
+                                var count = 0;
+                                for(var j in data[i]){
+                                    console.log("J: ", j);
+                                    if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                                        if(j == 0){
+                                            console.log(data[i][j].from, data[i][j].to);
+                                            dataset.number = data[i][j].number;
+                                            dataset.nodes.push({'name' : data[i][j].from});
+                                            dataset.nodes.push({'name' : data[i][j].to});
+                                            dataset.edges.push({'source' : count, 'target' : count+1});
+                                            count++;
+                                        }
+                                        else{
+                                            dataset.nodes.push({'name' : data[i][j].to});
+                                            dataset.edges.push({'source' : count, 'target' : count+1});
+                                            count++;        
+                                        }
+                                    }
+                                }
+                            }
+                            result.push(dataset);
+                        }
+                        console.log("RESULT", result);
+                        res.send(JSON.stringify(result));
+                    }
+                });
+            
                 
         });
 
         app.get('/data2', function(request, response){
           response.sendfile("./public/view.html");
+        });
+
+
+
+
+        app.get('/query3', function(req, res){
+            var tnumber = req.query.tnumber;
+            console.log("test1: ", tnumber);
+            var tmpObj = {}
+            bfs.getTrainRoute(tnumber, function(err, data){
+                if(err){
+                    console.log("ERR: ", err);
+                }
+                else{
+                    console.log("data: ", data);
+                    var result = [];
+                    for(var i in data){
+                        tmp = data[i];
+                        var dataset = {'nodes' : [], 'edges' : []};
+                        if(data[i] != null && data[i] != undefined){
+                            var count = 0;
+                            for(var j in data[i]){
+                                console.log("J: ", j);
+                                if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                                    if(j == 0){
+                                        console.log(data[i][j].from, data[i][j].to);
+                                        dataset.number = data[i][j].number;
+                                        dataset.nodes.push({'name' : data[i][j].from});
+                                        dataset.nodes.push({'name' : data[i][j].to});
+                                        dataset.edges.push({'source' : count, 'target' : count+1});
+                                        count++;
+                                    }
+                                    else{
+                                        dataset.nodes.push({'name' : data[i][j].to});
+                                        dataset.edges.push({'source' : count, 'target' : count+1});
+                                        count++;        
+                                    }
+                                }
+                            }
+                        }
+                        result.push(dataset);
+                    }
+                    console.log("RESULT", result);
+                    // app.get('/data5', function(req1, res1){
+                    //     res1.send(JSON.stringify(result));
+                    // });        
+                    res.send(JSON.stringify(result));
+                }
+            });              
+        });
+
+        app.get('/link3', function(request, response){
+          var data = req.query.data;
+          response.send(JSON.stringify(data));
+        });
+
+        app.get('/data6', function(request, response){
+          response.sendfile("./public/view3.html");
+        });
+
+
+
+        app.get('/query4', function(req, res){
+            app.get('/data7', function(req1, res1){
+                var source = req.query.source;
+                var destination = req.query.destination;
+                var date = req.query.date;
+                console.log("test1: ", source, destination, date);
+                var tmpObj = {}
+                bfs.getTrainRoute(source, destination, new Date(date).getDay(), function(err, data){   //function corresponding to date
+                    if(err){
+                        console.log("ERR: ", err);
+                    }
+                    else{
+                        console.log("data: ", data);
+                        var result = [];
+                        for(var i in data){
+                            tmp = data[i];
+                            var dataset = {'nodes' : [], 'edges' : []};
+                            if(data[i] != null && data[i] != undefined){
+                                var count = 0;
+                                for(var j in data[i]){
+                                    console.log("J: ", j);
+                                    if(data[i][j] != null && data[i][j] != undefined && data[i][j] != tmpObj){
+                                        if(j == 0){
+                                            console.log(data[i][j].from, data[i][j].to);
+                                            dataset.number = data[i][j].number;
+                                            dataset.nodes.push({'name' : data[i][j].from});
+                                            dataset.nodes.push({'name' : data[i][j].to});
+                                            dataset.edges.push({'source' : count, 'target' : count+1});
+                                            count++;
+                                        }
+                                        else{
+                                            dataset.nodes.push({'name' : data[i][j].to});
+                                            dataset.edges.push({'source' : count, 'target' : count+1});
+                                            count++;        
+                                        }
+                                    }
+                                }
+                            }
+                            result.push(dataset);
+                        }
+                        console.log("RESULT", result);
+                        // app.get('/data1', function(req1, res1){
+                            res1.send(JSON.stringify(result));
+
+                        // });
+                    }
+                });
+            });
+            res.sendfile("./public/options4.html");
+                
+        });
+
+        app.get('/data8', function(request, response){
+          response.sendfile("./public/view4.html");
+        });
+
+
+        app.get('/data4', function(request, response){
+          response.sendfile("./public/view2.html");
         });
 
 
@@ -203,6 +368,7 @@
         http.createServer(app).listen(app.get('port'), function(){
           console.log('Express server listening on port ' + app.get('port'));
         });
+
 
 
 
