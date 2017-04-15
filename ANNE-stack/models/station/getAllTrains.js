@@ -2,23 +2,24 @@ var neo4j = require('neo4j-driver').v1;
 var async = require('async');
 var driver = require('../../connection');
 
-function getOutwardTrains(station_name, callback){
+function getOutwardTrains(station_code, callback){
 
     var outgoingTrainQuery = "" + 
         "MATCH (n:Station)-[p:Travel]->(m:Station) " +
-        "WHERE n.name = {station_from} " +
+        "WHERE n.code = {station_from} " +
         "RETURN p";
       
     var session = driver.session();
 
     var data = [];
     session
-        .run( outgoingTrainQuery, {station_from:station_name})
+        .run( outgoingTrainQuery, {station_from : station_code})
         .then( function( result ) {
             for(var i=0;i<result.records.length;i++){
                 data.push(result.records[i]._fields[0].properties);
+		console.log("Print The results of getOutwardTrains for station: "+station_code);
+		console.log(result.records[i]._fields[0].properties);
             }
-            console.log(data);
             callback(null, data);
             session.close();
         })
@@ -27,10 +28,10 @@ function getOutwardTrains(station_name, callback){
         });
 }
 
-function getReachableStations(station_name, callback) {
+function getReachableStations(station_code, callback) {
     var BFS_query = "" + 
         "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
-        "WHERE n.name = {station_from} " + 
+        "WHERE n.code = {station_from} " + 
         "AND all(r in p where r.number = {number}) " + 
         "RETURN p";
 
@@ -38,7 +39,7 @@ function getReachableStations(station_name, callback) {
 
     async.waterfall([
         function(callback){
-            getOutwardTrains(station_name, function(err, results){
+            getOutwardTrains(station_code, function(err, results){
                 if(err){
                     callback(err, null);
                 }
@@ -51,7 +52,7 @@ function getReachableStations(station_name, callback) {
 	    var train_list= [];
             async.each(data, 
                     function(train, call){
-                    train.station_from = station_name;
+                    train.station_from = station_code;
                     session
                         .run( BFS_query, train)
                         .then( function( result ) {

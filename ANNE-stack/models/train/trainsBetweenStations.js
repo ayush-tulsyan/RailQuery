@@ -8,12 +8,12 @@ function getTrainInfo(train_no, callback){
     console.log("Get Train Info");
     var src_dest_query = "" + 
         "MATCH (n:Train) " + 
-        "WHERE n.name = {train} " + 
+        "WHERE n.number = {train} " + 
         "RETURN n";
 
     session = driver.session();
     session
-        .run( src_dest_query, {train:parseInt(train_no)})
+        .run( src_dest_query, {train:train_no})
         .then( function( result ) {
             var data = "";
             for(var i=0;i<result.records.length;i++){
@@ -32,10 +32,10 @@ function getTrainInfo(train_no, callback){
 
 function getTrainRoute(train_no, callback){
     console.log("The Train no is" + train_no);
-    train_no = parseInt(train_no);
+//    train_no = parseInt(train_no);
     var route_query = "" +
         "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
-        "WHERE n.name = {station_from} " + 
+        "WHERE n.code = {station_from} " + 
         "AND all(r in p where r.number = {number}) " + 
         "RETURN p";
 
@@ -87,13 +87,13 @@ function trainsBetweenStations(from, to, callback){
 
     var BFS_query = "" +
         "MATCH (n:Station)-[p:Travel*..]->(m:Station) " + 
-        "WHERE n.name = {station_from} AND m.name={station_to} " + 
+        "WHERE n.code = {station_from} AND m.code ={station_to} " + 
         "AND all(r in p where r.number = {number}) " +
         "RETURN p";
 
     var neighbour_query = "" +
         "MATCH (n:Station)-[p:Travel]->(m:Station) " +
-        "WHERE n.name = {station_from} " +
+        "WHERE n.code = {station_from} " +
         "RETURN p";
 
     var session = driver.session();
